@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麦当劳「消消乐」会员互动 Demo ｜ 2026 麦当劳开发者创新挑战参赛作品</title>
+<meta name="description" content="面向微信小程序场景的 HTML5 单文件消消乐（match-3）。开发阶段调用麦当劳 MCP 获取真实营养数据（kcal），含分享、双人/异步对战、城市榜与试吃券奖池。2026 麦当劳程序员创意开发大赛参赛作品。">
+<meta name="keywords" content="麦当劳,消消乐,match-3,麦当劳MCP,MCP,hackathon-2026,微信小程序,HTML5游戏,会员互动">
+<meta property="og:type" content="website">
+<meta property="og:title" content="麦当劳「消消乐」会员互动 Demo ｜ 2026 麦当劳开发者创新挑战">
+<meta property="og:description" content="面向微信小程序场景的 HTML5 单文件消消乐，开发时调用麦当劳 MCP 取真实营养数据，含分享、对战、城市榜与试吃券奖池。">
+<!-- 部署到 GitHub Pages 后，把下面两行的 YOUR-USER / YOUR-REPO 换成你的真实地址，并放一张 1200x630 的 cover.png（社交/微信分享卡片图） -->
+<meta property="og:url" content="https://Intel-Q.github.io/mcd-match/">
+<meta property="og:image" content="https://Intel-Q.github.io/mcd-match/cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://Intel-Q.github.io/mcd-match/">
+<style>
+  :root{
+    --bg:#fff7f2; --card:#ffffff; --ink:#3a3a3a; --sub:#7a6f68;
+    --orange:#ffb27a; --pink:#ff9aa6; --green:#a8e6b0; --blue:#a9d4f5; --yellow:#ffe08a; --mint:#9fe0d6;
+    --line:#f0e3da;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+  .wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px;}
+  header h1{font-size:26px;margin:0 0 6px;font-weight:800;}
+  .tag{display:inline-block;background:var(--pink);color:#fff;font-size:12px;padding:3px 10px;border-radius:999px;margin-bottom:12px;}
+  .lead{color:var(--sub);font-size:15px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:18px 0;box-shadow:0 4px 18px rgba(0,0,0,.04);}
+  h2{font-size:18px;margin:0 0 10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--sub);}
+  .btn{display:inline-block;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:12px;margin:6px 10px 6px 0;font-size:15px;}
+  .btn-primary{background:var(--orange);color:#5a3a1a;}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  ul.feat{margin:8px 0 0;padding-left:18px;}
+  ul.feat li{margin:6px 0;}
+  footer{color:var(--sub);font-size:12px;text-align:center;margin-top:28px;}
+  a{color:#d2691e;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">2026 麦当劳开发者创新挑战 · 参赛作品</span>
+    <h1>🍟 麦当劳「消消乐」会员互动 Demo</h1>
+    <p class="lead">一款面向微信小程序场景的 HTML5 单文件消消乐（match-3）。把会员等餐、餐后的碎片时间，变成一场有麦当劳真实产品陪伴的小游戏。</p>
+  </header>
+
+  <div class="card">
+    <a class="btn btn-primary" href="mcdonalds_match.html">▶ 立即试玩 Start Game（单文件游戏）</a>
+    <a class="btn btn-ghost" href="README.md">📖 查看项目说明</a>
+    <a class="btn btn-ghost" href="https://github.com/M-China/mcd-developer-innovation-challenge">🏆 赛事官方仓库</a>
+  </div>
+
+  <div class="card">
+    <h2>这是什么</h2>
+    <p class="lead">开发阶段调用 <strong>麦当劳 MCP</strong> 获取真实营养数据（6 款方块的真实 kcal），游戏内直接展示 kcal，让数据来源可被一眼验证。无需安装、无需后端、无需密钥，双击 HTML 即玩。</p>
+    <div class="chips">
+      <span class="chip">8×8 消消乐</span><span class="chip">手机滑动/点选</span><span class="chip">90 秒一局</span>
+      <span class="chip">真实 kcal 计分</span><span class="chip">分享提限</span><span class="chip">双人/异步对战</span>
+      <span class="chip">城市榜</span><span class="chip">试吃券奖池</span><span class="chip">微信小程序场景</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>核心玩法</h2>
+    <ul class="feat">
+      <li>消除方块按「kcal ÷ 100」得 m 币，kcal 为麦当劳 MCP 营养库真实字段；</li>
+      <li>每周赛循环 + 防沉迷限额；分享二选一（限额翻倍 / +200 m 币）；</li>
+      <li>对战模式：双人同屏或分享邀请朋友异步约战，m 币累计进本周；</li>
+      <li>各城市独立排名，每城前 100 名发试吃券 / 买一送一券。</li>
+    </ul>
+  </div>
+
+  <footer>
+    本作品为独立开发的参赛 Demo，非麦当劳官方产品，未获品牌背书。游戏内 kcal 仅用于积分换算，不构成营养建议。<br>
+    © 2026 麦当劳「消消乐」参赛 Demo
+  </footer>
+</div>
+</body>
+</html>
