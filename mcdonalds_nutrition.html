@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麦当劳精选产品清单 · MCP真实数据</title>
+<style>
+  :root{
+    --bg:#fff8f0; --card:#ffffff; --line:#f0d9b8; --red:#e4002b; --gold:#ffc72c;
+    --ink:#2b2118; --muted:#8a7a66; --chip:#fff0d6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6}
+  header{background:linear-gradient(135deg,var(--red),#b30022);color:#fff;padding:32px 20px;text-align:center}
+  header h1{margin:0;font-size:26px;letter-spacing:1px}
+  header p{margin:8px 0 0;opacity:.92;font-size:14px}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px}
+  .note{background:var(--chip);border:1px solid var(--line);border-radius:12px;
+        padding:14px 18px;font-size:13.5px;color:#5c4a35;margin:18px 0 26px}
+  .note b{color:var(--red)}
+  .cat{margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+  .cat h2{margin:0;font-size:19px;color:var(--red)}
+  .cat .tag{background:var(--gold);color:#3a2c00;font-size:12px;padding:2px 10px;border-radius:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+        overflow:hidden;box-shadow:0 2px 10px rgba(180,120,40,.06)}
+  .card .top{background:linear-gradient(135deg,#fff3da,#ffe6bb);padding:12px 16px;
+             display:flex;justify-content:space-between;align-items:center}
+  .card .top .nm{font-weight:700;font-size:16px}
+  .card .top .kcal{font-size:13px;color:#a8651b;font-weight:700;white-space:nowrap}
+  .card .body{padding:14px 16px}
+  .badge{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:6px;
+         margin:0 6px 6px 0;font-weight:600}
+  .b-hot{background:#ffe0e0;color:#c0142b}
+  .b-cn{background:#fff0c2;color:#9a6b00}
+  .b-look{background:#e3f3e8;color:#1f7a3d}
+  .look{font-size:13px;color:#4a4036;margin:8px 0;padding-left:10px;border-left:3px solid var(--gold)}
+  .why{font-size:13px;color:#6b5b48;margin:6px 0 0}
+  .nut{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .nut span{background:#faf3e8;border:1px solid var(--line);border-radius:6px;
+            font-size:11.5px;padding:3px 8px;color:#6b5b48}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px;background:#fff;
+        border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(180,120,40,.06)}
+  th,td{padding:9px 10px;text-align:center;border-bottom:1px solid #f0e6d6}
+  th{background:var(--red);color:#fff;font-weight:600}
+  tbody tr:nth-child(even){background:#fffaf2}
+  tfoot td{font-weight:700;background:#fff0d6}
+  .count{font-size:13px;color:var(--muted);margin-top:8px}
+  footer{text-align:center;color:#b09a7c;font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍔 麦当劳精选产品清单</h1>
+  <p>基于麦当劳 MCP 官方接口真实营养数据 · 按类别筛选 · 共 14 款（&lt;20）</p>
+</header>
+<div class="wrap">
+
+  <div class="note">
+    <b>筛选标准（你给的三条）：</b>① 每个类别挑 1–2 款；② 优先热销品 / 更适合中国人口味的单品；
+    ③ 选出的产品<b>外观彼此差异明显</b>，一眼能认出。说明：MCP 的 <code>list-nutrition-foods</code>
+    接口返回 160 个真实餐品但<b>不含分类字段</b>，类别为我依据产品名称归纳；销量/中国口味标注依据已核验公开资料。
+    <br><b>本次调整：</b>汉堡类（圆面包夹肉）外观都太像，仅保留 1 款最具中国代表性的「麦辣鸡腿汉堡」，
+    原「巨无霸」「板烧鸡腿堡」换为外观差异更明显的「脆香油条」「麦麦脆汁鸡·琵琶腿」。
+  </div>
+
+  <!-- 类别1 -->
+  <div class="cat"><h2>① 早餐 · 麦满分</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🥚 猪柳蛋麦满分</span><span class="kcal">387 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">早餐经典</span><span class="badge b-cn">中国早餐线主力</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">圆扁英式松饼夹煎蛋+猪柳，切开可见流心蛋与肉饼，黄白分明。</div>
+        <div class="why">麦当劳早餐招牌，最经典的"蛋+肉"组合。</div>
+        <div class="nut"><span>蛋白23g</span><span>脂肪21g</span><span>碳水25g</span><span>钠846mg</span><span>钙243mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别2：仅1款汉堡 -->
+  <div class="cat"><h2>② 中国鸡肉汉堡（汉堡类仅留1款）</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🌶️ 麦辣鸡腿汉堡</span><span class="kcal">485 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">年度汉堡销冠</span><span class="badge b-cn">本土研发·每秒6份</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">圆形炸鸡腿肉堡，淋红色辣酱，整体橙红、酱汁外溢，是汉堡里视觉最特别的。</div>
+        <div class="why">麦当劳中国年度汉堡销量冠军、本土研发；汉堡类只保留这一款代表。</div>
+        <div class="nut"><span>蛋白24g</span><span>脂肪24g</span><span>碳水42g</span><span>钠1208mg</span><span>钙154mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别3 -->
+  <div class="cat"><h2>③ 薯条 · 小食</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🍟 中薯条</span><span class="kcal">289 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">每单必点</span><span class="badge b-cn">国民标配</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">细长金黄长条，散装盒装，形态与任何堡/块都完全不同。</div>
+        <div class="why">几乎每单必点的标志性小食，红色包装盒。</div>
+        <div class="nut"><span>蛋白4g</span><span>脂肪12g</span><span>碳水38g</span><span>钠165mg</span><span>钙18mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别4 -->
+  <div class="cat"><h2>④ 鸡块</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🟡 麦乐鸡（5块）</span><span class="kcal">213 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">全球核心小食</span><span class="badge b-cn">儿童/蘸酱首选</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">金黄色不规则块状鸡块，4–5 块一盒，与长条薯条区分明显。</div>
+        <div class="why">全球核心小食，与薯条、巨无霸合占约 60% 销售额。</div>
+        <div class="nut"><span>蛋白12g</span><span>脂肪12g</span><span>碳水13g</span><span>钠422mg</span><span>钙9mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别5 -->
+  <div class="cat"><h2>⑤ 炸鸡翅</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🔴 麦辣鸡翅（2块）</span><span class="kcal">224 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">本土爆款</span><span class="badge b-cn">中国本土研发</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">带骨红色辣味鸡翅，形态（带骨翅）与鸡块、鸡腿堡完全不同。</div>
+        <div class="why">1998–99 中国本土研发，与麦辣鸡腿堡并列"最畅销产品"。</div>
+        <div class="nut"><span>蛋白13g</span><span>脂肪15g</span><span>碳水9g</span><span>钠537mg</span><span>钙13mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别6：新增整块带骨炸鸡 -->
+  <div class="cat"><h2>⑥ 整块带骨炸鸡</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🍗 麦麦脆汁鸡·琵琶腿</span><span class="kcal">328 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">炸鸡主力</span><span class="badge b-cn">带骨大块</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">整块带骨鸡腿肉、外裹脆皮，体积比鸡块大、比鸡翅更"肉感"，形态独特。</div>
+        <div class="why">替换原"板烧鸡腿堡"——同样是鸡腿肉但整块带骨炸制，外观与堡完全不同。</div>
+        <div class="nut"><span>蛋白21g</span><span>脂肪20g</span><span>碳水16g</span><span>钠905mg</span><span>钙24mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别7 -->
+  <div class="cat"><h2>⑦ 中式甜派</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🟣 香芋派</span><span class="kcal">232 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">中国特色</span><span class="badge b-cn">仅中国/亚太</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">金黄半月形炸派，切开露出紫色香芋泥，紫色内馅极独特。</div>
+        <div class="why">中国特有口味派，是麦当劳"本土化"的代表甜点。</div>
+        <div class="nut"><span>蛋白2g</span><span>脂肪12g</span><span>碳水28g</span><span>钠159mg</span><span>钙7mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别8 -->
+  <div class="cat"><h2>⑧ 冰淇淋 · 甜筒</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🍦 圆筒冰淇淋</span><span class="kcal">93 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">国民甜品</span><span class="badge b-cn">平价人气</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">蛋筒托起的白色螺旋冰淇淋，形态（锥形）与杯装甜品完全不同。</div>
+        <div class="why">国民级平价甜品，常作为周末赠送迷你圆筒。</div>
+        <div class="nut"><span>蛋白2g</span><span>脂肪3g</span><span>碳水14g</span><span>钠36mg</span><span>钙77mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别9 -->
+  <div class="cat"><h2>⑨ 麦旋风</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">⚫ 奥利奥麦旋风</span><span class="kcal">266 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">经典甜品</span><span class="badge b-cn">年轻人爱</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">透明杯装白色冰淇淋拌黑色奥利奥碎，黑白对比鲜明，与纯白圆筒区分。</div>
+        <div class="why">杯装搅拌甜品，黑色饼干碎是其视觉标志。</div>
+        <div class="nut"><span>蛋白5g</span><span>脂肪9g</span><span>碳水40g</span><span>钠116mg</span><span>钙185mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别10 -->
+  <div class="cat"><h2>⑩ 中式粥 · 早餐</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🥣 皮蛋鸡肉粥</span><span class="kcal">133 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">中国特色</span><span class="badge b-cn">仅中国早餐</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">白粥碗里墨绿色皮蛋粒+鸡肉丝，半流质形态与所有固体单品都不同。</div>
+        <div class="why">中国特有的中式早餐粥，本土化典型产品。</div>
+        <div class="nut"><span>蛋白6g</span><span>脂肪3g</span><span>碳水20g</span><span>钠611mg</span><span>钙20mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别11：新增中式油炸 -->
+  <div class="cat"><h2>⑪ 中式油炸早餐</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🥖 脆香油条</span><span class="kcal">202 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">中国特色</span><span class="badge b-cn">仅中国早餐</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">金黄扭结/中空长条，表面粗糙酥脆，与笔直光滑的薯条一眼不同。</div>
+        <div class="why">替换原"巨无霸"——中国特有国民早餐，外观独一无二、最贴合中国口味。</div>
+        <div class="nut"><span>蛋白5g</span><span>脂肪12g</span><span>碳水19g</span><span>钠230mg</span><span>钙18mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别12 -->
+  <div class="cat"><h2>⑫ 健康谷物小食</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🌽 大杯玉米杯</span><span class="kcal">87 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">健康小食</span><span class="badge b-cn">老少皆宜</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">杯装整粒金黄甜玉米，颗粒形态与薯条/鸡块明显不同。</div>
+        <div class="why">低卡健康小食代表，热量仅 87 kcal。</div>
+        <div class="nut"><span>蛋白4g</span><span>脂肪1g</span><span>碳水12g</span><span>钠2mg</span><span>钙10mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别13 -->
+  <div class="cat"><h2>⑬ 碳酸饮料</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🥤 可乐（中杯）</span><span class="kcal">147 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">最经典饮料</span><span class="badge b-cn">全民标配</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">红色杯装深褐色碳酸饮料，液体形态，与所有固体食物区分。</div>
+        <div class="why">最经典的搭配饮料，红色包装一眼可辨。</div>
+        <div class="nut"><span>蛋白0g</span><span>脂肪0g</span><span>碳水36g</span><span>钠0mg</span><span>钙10mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 类别14 -->
+  <div class="cat"><h2>⑭ 沙拉卷 · 轻食</h2><span class="tag">1 款</span></div>
+  <div class="grid">
+    <div class="card">
+      <div class="top"><span class="nm">🥬 鲜蔬蛋沙拉叠叠卷</span><span class="kcal">266 kcal</span></div>
+      <div class="body">
+        <span class="badge b-hot">轻食新品</span><span class="badge b-cn">健康取向</span><span class="badge b-look">外观高辨识</span>
+        <div class="look">绿色外卷包裹彩色蔬菜蛋沙拉，卷状+绿皮，与堡/派/杯都不同。</div>
+        <div class="why">轻食沙拉卷，绿色外观在麦当劳菜单里极少见。</div>
+        <div class="nut"><span>蛋白11g</span><span>脂肪14g</span><span>碳水24g</span><span>钠518mg</span><span>钙62mg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 汇总表 -->
+  <div class="cat"><h2>📊 14 款汇总（MCP 真实营养数据）</h2></div>
+  <table>
+    <thead>
+      <tr><th>类别</th><th>产品</th><th>kcal</th><th>蛋白g</th><th>脂肪g</th><th>碳水g</th><th>钠mg</th><th>钙mg</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>早餐麦满分</td><td>猪柳蛋麦满分</td><td>387</td><td>23</td><td>21</td><td>25</td><td>846</td><td>243</td></tr>
+      <tr><td>中国鸡肉堡</td><td>麦辣鸡腿汉堡</td><td>485</td><td>24</td><td>24</td><td>42</td><td>1208</td><td>154</td></tr>
+      <tr><td>薯条小食</td><td>中薯条</td><td>289</td><td>4</td><td>12</td><td>38</td><td>165</td><td>18</td></tr>
+      <tr><td>鸡块</td><td>麦乐鸡(5块)</td><td>213</td><td>12</td><td>12</td><td>13</td><td>422</td><td>9</td></tr>
+      <tr><td>炸鸡翅</td><td>麦辣鸡翅(2块)</td><td>224</td><td>13</td><td>15</td><td>9</td><td>537</td><td>13</td></tr>
+      <tr><td>整块带骨炸鸡</td><td>麦麦脆汁鸡·琵琶腿</td><td>328</td><td>21</td><td>20</td><td>16</td><td>905</td><td>24</td></tr>
+      <tr><td>中式甜派</td><td>香芋派</td><td>232</td><td>2</td><td>12</td><td>28</td><td>159</td><td>7</td></tr>
+      <tr><td>冰淇淋甜筒</td><td>圆筒冰淇淋</td><td>93</td><td>2</td><td>3</td><td>14</td><td>36</td><td>77</td></tr>
+      <tr><td>麦旋风</td><td>奥利奥麦旋风</td><td>266</td><td>5</td><td>9</td><td>40</td><td>116</td><td>185</td></tr>
+      <tr><td>中式粥</td><td>皮蛋鸡肉粥</td><td>133</td><td>6</td><td>3</td><td>20</td><td>611</td><td>20</td></tr>
+      <tr><td>中式油炸早餐</td><td>脆香油条</td><td>202</td><td>5</td><td>12</td><td>19</td><td>230</td><td>18</td></tr>
+      <tr><td>谷物小食</td><td>大杯玉米杯</td><td>87</td><td>4</td><td>1</td><td>12</td><td>2</td><td>10</td></tr>
+      <tr><td>碳酸饮料</td><td>可乐(中杯)</td><td>147</td><td>0</td><td>0</td><td>36</td><td>0</td><td>10</td></tr>
+      <tr><td>沙拉卷</td><td>鲜蔬蛋沙拉叠叠卷</td><td>266</td><td>11</td><td>14</td><td>24</td><td>518</td><td>62</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><td>共14类/14款</td><td>热量区间</td><td>87–485</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+    </tfoot>
+  </table>
+  <div class="count">注：营养数值为麦当劳 MCP 官方接口实测（以官方为准）；钠/钙为 mg。汉堡类仅保留 1 款代表性单品。</div>
+
+</div>
+<footer>数据来源：麦当劳 MCP（mcp.mcd-mcp · list-nutrition-foods）· 销量/中国口味标注依据已核验公开资料</footer>
+</body>
+</html>

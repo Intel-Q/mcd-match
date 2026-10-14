@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>麦当劳会员消消乐 · 创意大赛原型</title>
+<style>
+  :root{
+    --red:#DA291C; --yellow:#FFC72C; --ink:#2b2b2b; --bg:#f4f5f7; --green:#1a8f4c;
+    --card:#ffffff; --line:#f0d9a8; --green:#1a8f4c; --gray:#8a8a8a;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--ink);}
+  #app{max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:var(--bg);}
+  header{background:var(--red); color:#fff; padding:12px 14px; display:flex; align-items:center; justify-content:space-between;}
+  header .title{font-weight:800; font-size:17px; display:flex; align-items:center; gap:6px;}
+  header .mem{font-size:11px; background:rgba(255,255,255,.18); padding:3px 8px; border-radius:20px;}
+  .phasebar{background:var(--yellow); color:#5a3b00; font-size:12px; padding:6px 14px; text-align:center; font-weight:600;}
+  nav{display:flex; background:#fff; border-bottom:1px solid var(--line);}
+  nav button{flex:1; border:0; background:#fff; padding:11px 0; font-size:13px; color:#777; font-weight:600; border-bottom:3px solid transparent;}
+  nav button.active{color:var(--red); border-bottom-color:var(--red);}
+  main{flex:1; overflow-y:auto; padding:14px;}
+  section{display:none;}
+  section.active{display:block;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .card h3{margin:0 0 10px; font-size:15px; color:var(--red);}
+  /* game */
+  .gametop{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .gametop .pill{background:#fff; border:1px solid var(--line); border-radius:20px; padding:6px 12px; font-size:12px; font-weight:700;}
+  .gametop .pill b{color:var(--red);}
+  .timer{font-size:13px; font-weight:800; color:#fff; background:var(--red); padding:6px 14px; border-radius:20px;}
+  .timer.warn{background:#e67e22;}
+  #board{display:grid; grid-template-columns:repeat(8,1fr); gap:5px; background:#ecedf0; padding:7px; border-radius:14px; border:1px solid #e3e6ea; touch-action:none; user-select:none;}
+  .cell{aspect-ratio:1/1; border-radius:14px; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; transition:transform .12s, box-shadow .12s; position:relative; overflow:hidden;}
+  .cell .icwrap{width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.6); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .cell .ic{font-size:26px; line-height:1;}
+  .cell.sel{box-shadow:0 0 0 3px var(--red); transform:scale(.93);}
+  .cell.pop{animation:pop .24s ease forwards; z-index:5;}
+  @keyframes pop{0%{transform:scale(1);opacity:1;}55%{transform:scale(1.28);opacity:1;}100%{transform:scale(.1);opacity:0;}}
+  .cell.hint{animation:hintpulse .7s ease-in-out infinite; z-index:6;}
+  @keyframes hintpulse{0%,100%{box-shadow:0 0 0 3px rgba(218,41,28,.95);}50%{box-shadow:0 0 0 10px rgba(218,41,28,0);}}
+  .hint{font-size:11px; color:var(--gray); margin-top:10px; text-align:center;}
+  .roundbtn{margin-top:12px; width:100%; background:var(--red); color:#fff; border:0; border-radius:12px; padding:12px; font-size:14px; font-weight:800;}
+  .roundbtn:disabled{background:#ccc;}
+  .roundbtn.start{background:var(--green);}
+  .roundbtn.restart{background:#555;}
+  .iconbtn{margin-top:10px; padding:9px 16px; border-radius:22px; border:1px solid #ddd; background:#fff; font-size:13px; font-weight:700; color:#444; cursor:pointer;}
+  .iconbtn:hover{background:#f5f5f5;}
+  /* tables */
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{padding:8px 6px; text-align:left; border-bottom:1px solid #f3e6c8;}
+  th{color:#999; font-weight:600; font-size:11px;}
+  tr.top td{background:#fff8e1;}
+  tr.me td{background:#e8f7ee; font-weight:800;}
+  tr.me td .mval, tr.me td.mval{color:#0a8f3c;}
+  tr.septr td{background:transparent; color:#aaa; text-align:center; font-size:11px; padding:6px; border-bottom:1px dashed #e0d4bb;}
+  tr.bottom td{background:#e8f7ee; border-top:2px solid #0a8f3c; font-weight:800;}
+  .rankbadge{font-size:15px;}
+  .medal{font-weight:800;}
+  .mval{font-weight:800; color:var(--red);}
+  .linkbtn{background:none; border:none; color:#0a6cc4; font-size:12px; cursor:pointer; padding:6px; text-decoration:underline;}
+  /* pool */
+  .coupon{display:flex; align-items:center; gap:10px; background:linear-gradient(135deg,#fff,#fff3d6); border:1px dashed var(--red); border-radius:12px; padding:10px; margin-bottom:8px;}
+  .coupon .num{width:30px; height:30px; border-radius:50%; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0;}
+  .coupon .ct{font-size:13px; font-weight:700;}
+  .coupon .cd{font-size:11px; color:#888;}
+  .btn{display:inline-block; border:0; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:800; cursor:pointer;}
+  .btn.red{background:var(--red); color:#fff;}
+  .btn.yel{background:var(--yellow); color:#5a3b00;}
+  .btn.on{box-shadow:0 0 0 3px #DA291C inset;}
+  .btn:disabled{background:#ddd; color:#999; cursor:not-allowed;}
+  .btnrow{display:flex; gap:8px; margin-top:8px;}
+  .tag{font-size:11px; padding:2px 8px; border-radius:10px; font-weight:700;}
+  .tag.done{background:#e3f5e9; color:var(--green);}
+  .tag.wait{background:#fff0d6; color:#b87900;}
+  .toast{position:fixed; left:50%; top:64px; transform:translateX(-50%); background:rgba(0,0,0,.82); color:#fff; padding:10px 16px; border-radius:24px; font-size:13px; z-index:99; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90%; text-align:center;}
+  .toast.show{opacity:1;}
+  .demo{background:#fffbe9; border:1px dashed #e0b94a;}
+  .demo h3{color:#b87900;}
+  .mini{font-size:11px; color:#999;}
+  .big{font-size:22px; font-weight:800; color:var(--red);}
+  ul.cp{margin:6px 0 0; padding-left:18px; font-size:12px; color:#555;}
+  .pub{font-size:11px; color:#b87900; background:#fff8e1; padding:6px 10px; border-radius:8px; margin-bottom:10px;}
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:200;}
+  .modal.show{display:flex;}
+  .modal .box{background:#fff; border-radius:18px; padding:24px 22px; width:78%; max-width:320px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .modal .box h2{margin:0 0 8px; color:var(--red); font-size:20px;}
+  .modal .box p{margin:6px 0 16px; font-size:13px; color:#555;}
+  .modal .box .btn{width:100%;}
+  .modal .box .modalbtns{display:flex; gap:8px;}
+  .modal .box .modalbtns .btn{width:auto; flex:1;}
+  .modal .box{max-height:82vh; overflow-y:auto;}
+  .endtip{font-size:12px; color:#999; margin:2px 0 8px; font-weight:700; text-align:left;}
+  .endrows{text-align:left; margin-bottom:10px;}
+  .endrow{display:flex; align-items:center; gap:8px; padding:6px 2px; border-bottom:1px dashed #efefef;}
+  .endic{font-size:20px; width:26px; text-align:center;}
+  .endname{flex:1; font-size:13px; font-weight:600;}
+  .endcnt{font-size:13px; color:var(--red); font-weight:800;}
+  .endkcal{font-size:11px; color:#888; width:66px; text-align:right;}
+  .endnote{font-size:11px; color:#999; margin:8px 2px 0; text-align:center;}
+  .endsum{background:#fff8e1; border-radius:10px; padding:10px 12px; font-size:13px; line-height:1.8; text-align:left; margin-bottom:14px;}
+  .endsum b{color:var(--red);}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="title">🍔 麦当劳会员消消乐</div>
+    <div class="mem" id="memBadge">会员已自动登录</div>
+  </header>
+  <div class="phasebar" id="phaseBar">—</div>
+  <nav>
+    <button data-tab="game" class="active">🎮 玩游戏</button>
+    <button data-tab="rank">🏆 排行榜</button>
+    <button data-tab="battle">⚔️ 对战</button>
+    <button data-tab="pool">🎟️ 奖池</button>
+    <button data-tab="me">👤 我的</button>
+  </nav>
+  <main>
+    <!-- GAME -->
+    <section id="tab-game" class="active">
+      <div class="gametop">
+        <div class="pill">本周m币 <b id="weekM">0</b></div>
+        <div class="timer" id="timer">90s</div>
+        <div class="pill">本局 <b id="roundM">0</b></div>
+      </div>
+      <div id="board"></div>
+      <div class="hint">点击相邻两个方块交换；横/竖≥3 个相同即消除，连锁越多 m 币越多。每消除 1 个得「kcal÷100」m 币。游戏积分结合麦当劳 MCP 真实营养数据（kcal），仅供娱乐参考。</div>
+      <button class="roundbtn start" id="startBtn">▶ 开始游戏</button>
+      <button class="roundbtn restart" id="restartBtn" style="display:none;">🔄 重新开始</button>
+      <button class="iconbtn" id="soundBtn">🔊 声音开</button>
+      <button class="iconbtn" id="shareBtn">📤 分享有礼</button>
+      <div id="battleBanner" style="display:none; margin-top:12px; background:#185FA5; color:#fff; border-radius:12px; padding:12px; font-size:13px; font-weight:700; text-align:center;">
+        <div id="battleBannerText">对战进行中</div>
+        <button id="exitBattleBtn" style="margin-top:8px; background:#fff; color:#185FA5; border:0; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:800; cursor:pointer;">退出对战</button>
+      </div>
+    </section>
+
+    <!-- RANK -->
+    <section id="tab-rank">
+      <div class="card">
+        <h3>本周 m 币实时排行榜（城市榜）</h3>
+        <p class="mini" id="rankWeek">—</p>
+        <p class="mini">📍 已按登录授权定位：<b id="rankCityTag">—</b>（自动确定，无需选择）</p>
+        <table>
+          <thead><tr><th>排名</th><th>会员</th><th>本周m币</th></tr></thead>
+          <tbody id="rankBody"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>规则速览</h3>
+        <ul class="cp">
+          <li>统计周期：周五 00:00 → 下周四 23:59（自然周赛）。</li>
+          <li>周四 23:59 后自动冻结本周成绩到「奖池页」。</li>
+          <li>周五 00:00–23:59 为领奖窗口：各城市前 100 名可领无门槛券或兑积分（二选一），其余账户兑普通积分。</li>
+          <li>周五 23:59 未操作 → m 币清零；普通积分永久保留。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- POOL -->
+    <section id="tab-pool">
+      <div class="pub">📢 奖池页为<strong>公开页面</strong>，所有会员均可查看各城市前 100 名与对应优惠券（真实场景仅周五 00:00–23:59 开放领奖，演示可随时操作）。</div>
+      <div class="card" style="background:#eef6ff;">
+        <p style="font-weight:700;margin:0 0 6px;">🎯 发券口径：各城市独立排名</p>
+        <p class="mini">每个城市独立排名，前 100 名发放试吃 / 推广券。</p>
+        <p class="mini" style="margin-top:8px;">📍 当前定位城市：<b id="poolCityTag">—</b>，仅显示该城市的排名与优惠券。</p>
+      </div>
+      <div class="card" id="poolCard">
+        <h3 id="poolTitle">m 币奖池</h3>
+        <div id="poolBody"></div>
+      </div>
+    </section>
+
+    <!-- ME -->
+    <section id="tab-me">
+      <div class="card">
+        <h3>我的资产</h3>
+        <div class="big" id="myPoints">0</div>
+        <div class="mini">永久普通积分（10000 m 币 = 1 积分，可兑麦当劳既有产品）</div>
+        <p style="margin:10px 0 4px; font-weight:700;">本周 m 币（累计中）：<span class="mval" id="myWeekM">0</span></p>
+        <p class="mini" id="myDaily">今日剩余局数 — / 今日已得 m —</p>
+        <p class="mini" style="margin-top:8px;color:#0a6cc4;">🔗 成品阶段：m 币按固定口径（10000 m 币 = 1 普通积分）换算后计入麦当劳会员积分体系，与会员既有积分 / 权益打通（登录授权后自动归集，游戏只负责发奖环节）。本 Demo 仅在本地模拟。</p>
+      </div>
+      <div class="card">
+        <h3>已领取优惠券</h3>
+        <div id="myCoupons"><p class="mini">暂无</p></div>
+        <p class="mini" style="margin-top:8px;color:#0a6cc4;">🔗 成品阶段：此处领取的优惠券将自动同步到麦当劳会员小程序「卡包」（经麦当劳 MCP / 会员券系统发放到账户，到店即可核销）。本 Demo 仅在本地列表展示。</p>
+      </div>
+      <div class="card demo">
+        <h3>🛠 演示控制（参赛评审用）</h3>
+        <p class="mini">当前为周二，处于累计阶段。用下面按钮可演示「周四结算→周五领奖」完整闭环。</p>
+        <div class="btnrow" style="flex-wrap:wrap;">
+          <button class="btn yel" id="dFreeze">① 模拟周四23:59结算</button>
+          <button class="btn yel" id="dClaim">② 进入周五领奖窗口</button>
+          <button class="btn yel" id="dClose">③ 周五23:59清零关闭</button>
+          <button class="btn yel" id="dReset">恢复实际时间</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BATTLE -->
+    <section id="tab-battle">
+      <div class="card">
+        <h3>⚔️ 对战模式</h3>
+        <p class="mini">对战获得的 m 币同样累计进本周 m 币榜。</p>
+        <button class="roundbtn" id="localBattleBtn" style="background:#185FA5;">👥 双人同屏（同设备轮流）</button>
+        <button class="roundbtn" id="asyncBattleBtn" style="background:#854F0B; margin-top:10px;">📨 分享邀请朋友对战</button>
+        <p class="mini" style="margin-top:12px; line-height:1.7;">· <b>双人同屏</b>：同一棋盘界面，玩家 1 与玩家 2 轮流各玩 90 秒，比谁 m 币多。<br>· <b>分享邀请朋友对战</b>：点按钮生成邀约海报 / 链接，分享给好友；好友各自在手机点开始、玩 90 秒，随后比 m 币多少（演示中好友成绩由系统模拟，真实场景需后端串联）。</p>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="endModal">
+  <div class="box">
+    <h2>⏰ 游戏结束</h2>
+    <div id="endModalBreakdown"></div>
+    <div class="modalbtns">
+      <button class="btn yel" id="modalClose">关闭</button>
+      <button class="btn red" id="modalAgain">再来一局</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="limitModal">
+  <div class="box">
+    <h2>⏱ 已达上限</h2>
+    <p class="mini" id="limitMsg">今日已达防沉迷上限</p>
+    <button class="btn red" id="limitShareBtn">去分享解锁</button>
+    <button class="btn" id="limitClose" style="width:100%; margin-top:8px; background:#fff; color:#777; border:1px solid #ddd;">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="shareModal">
+  <div class="box">
+    <h2>📤 分享有礼</h2>
+    <p class="mini">今日分享可二选一（每天限 1 次）</p>
+    <button class="btn yel" id="shareBoostBtn" style="width:100%;">提升今日限额</button>
+    <button class="btn red" id="shareMBtn" style="width:100%; margin-top:8px;">得 200 m币</button>
+    <button class="btn" id="shareClose" style="width:100%; margin-top:8px; background:#fff; color:#777; border:1px solid #ddd;">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="battleResultModal">
+  <div class="box">
+    <h2>⚔️ 对战结束</h2>
+    <div id="battleResultBreakdown"></div>
+    <div class="modalbtns">
+      <button class="btn yel" id="battleAgain">再来一局</button>
+      <button class="btn red" id="battleClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="asyncInviteModal">
+  <div class="box">
+    <h2>📨 邀请好友对战</h2>
+    <p class="mini">生成专属邀约，分享给好友一起玩 90 秒比 m 币</p>
+    <canvas id="inviteCanvas" width="300" height="400" style="width:100%; max-width:240px; border-radius:12px; display:block; margin:0 auto 12px;"></canvas>
+    <div style="font-size:12px; color:#555; margin-bottom:8px; word-break:break-all; background:#f6f7f9; border-radius:8px; padding:8px; line-height:1.5;">邀请链接：<span id="inviteLinkText" style="color:#185FA5;"></span></div>
+    <button class="btn yel" id="copyInviteBtn" style="width:100%;">📋 复制邀请链接</button>
+    <button class="btn" id="savePosterBtn" style="width:100%; margin-top:8px; background:#fff; color:#777; border:1px solid #ddd;">💾 保存海报图</button>
+    <button class="btn red" id="inviteDoneBtn" style="width:100%; margin-top:10px;">完成，去开始对战 ▶</button>
+  </div>
+</div>
+
+<div class="modal" id="battleStartModal">
+  <div class="box">
+    <h2>⚔️ 好友对战</h2>
+    <p class="mini" id="battleStartText">已向好友发送对战邀请。好友将在各自手机点开始、玩 90 秒，随后比 m 币多少。</p>
+    <p class="mini" style="font-weight:700; color:#DA291C; margin-top:6px;">现在，你先开始你的 90 秒！</p>
+    <button class="btn red" id="battleStartBtn" style="width:100%; margin-top:8px;">▶ 开始对战</button>
+    <button class="btn" id="battleStartCancel" style="width:100%; margin-top:8px; background:#fff; color:#777; border:1px solid #ddd;">取消</button>
+  </div>
+</div>
+
+<script>
+/* ===== 演示用产品子集（Demo 先筛 6 款，外观各异、便于一眼区分） =====
+   剔除：油条/辣腿堡/香芋派/沙拉卷/琵琶腿/麦旋风/辣鸡翅/皮蛋鸡肉粥
+   保留：猪柳蛋麦满分/中薯条/麦乐鸡/圆筒冰淇淋/玉米杯/可乐
+   颜色刻意拉开，形状图标也各异。
+   ⚠️ 生产环境：方块产品不写死，由麦当劳 MCP 在「开发期」拉取真实数据并内置
+      （上线后也可由服务端周期刷新）「全部在售 / 当季新品 / 主推活动品」，
+      既勾起会员食欲，也把消消乐变成新品与活动推广位（可配置轮换）。
+      下方 kcal 字段取自麦当劳 MCP 营养库（list-nutrition-foods 返回的真实能量值），
+   直接展示 kcal 更可证明数据源自 MCP，也符合麦当劳中国菜单的法定营养标识惯例。 */
+const PRODUCTS = [
+  {key:'mcmuffin', name:'猪柳蛋麦满分', short:'猪柳蛋', ic:'🥯', color:'#F6D7A8', text:'#5a3b00', kcal:387},
+  {key:'fries',    name:'中薯条',       short:'薯条',   ic:'🍟', color:'#F4C2B8', text:'#5a4500', kcal:289},
+  {key:'nugget',   name:'麦乐鸡5块',    short:'麦乐鸡', ic:'🍗', color:'#C6E7CB', text:'#fff',    kcal:213},
+  {key:'cone',     name:'圆筒冰淇淋',   short:'冰淇淋', ic:'🍦', color:'#C3D7F4', text:'#1c4a66', kcal:93},
+  {key:'corn',     name:'大杯玉米杯',   short:'玉米杯', ic:'🌽', color:'#F6E9A8', text:'#5a4500', kcal:87},
+  {key:'cola',     name:'可乐中杯',     short:'可乐',   ic:'🥤', color:'#B4E6E2', text:'#fff',    kcal:147},
+];
+const NTYPES = PRODUCTS.length;
+const ROUND_SEC = 90;
+const DAILY_CAP = 50;        // 防沉迷：每日最多局数（可调）
+const DAILY_M_CAP = 20000;   // 防沉迷：单日 m 币获取上限（可调）
+const M_PER_POINT = 10000;   // 10000 m 币 = 1 普通积分
+const SHARE_M_BONUS = 200;   // 分享奖励：选「得 m 币」时额外获得
+
+const COUPONS = [
+  {name:'新品免费试吃券（无门槛）', desc:'前3名·第1名专属，指定当季新品0元试吃'},
+  {name:'主推套餐买一送一（无门槛）', desc:'前3名·第2名专属，当季主推套餐1+1'},
+  {name:'新品第二份半价券（无门槛）', desc:'前3名·第3名专属，指定新品第二份半价'},
+  {name:'百名入围·指定新品8折券', desc:'第4–100名专属，指定新品8折'},
+];
+const REWARD_TOP_N = 100;          // 发券名次上限（前100名）
+const CITIES = ['北京','上海','广州','深圳','成都','杭州'];
+let poolShowAll = false;           // 奖池排名是否展开全部
+let rankShowAll = false;           // 排行榜是否展开全部
+/* 城市由会员登录时授权定位自动确定，无需会员手动选择 */
+function myCity(){ const m=me(); return (m && m.city) || '北京'; }
+
+/* ===== 防沉迷限额（分享可提升 1 倍） ===== */
+function resetDaily(){ state.daily={date: todayStr(), rounds:0, m:0, shared:false, boost:false}; }
+function roundsCap(){ return DAILY_CAP * (state.daily.boost?2:1); }
+function mCap(){ return DAILY_M_CAP * (state.daily.boost?2:1); }
+
+/* ===== 状态 ===== */
+const KEY = 'mcd_match_v2';
+let state = loadState();
+
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if(s && s.members) return s;
+  }catch(e){}
+  return defaultState();
+}
+function defaultState(){
+  const sims = ['会员小美','麦粉老王','吃货阿强','打工人的快乐','辣堡星人','薯条控本控','甜筒仙女','早餐猎人','深夜食堂','周末带娃党','加班续命人','学生党小李','健身教练阿杰','遛娃宝妈','夜班护士','退休大爷','出差常客','探店博主'];
+  const members = [{id:'me', name:'我（当前会员）', city:'北京', thisWeekM:0, points:0, coupons:[]}];
+  sims.forEach((n,i)=> members.push({id:'s'+i, name:n, city:CITIES[i%CITIES.length], thisWeekM: Math.round((Math.random()*3+0.5)*1000)/1000, points: Math.floor(Math.random()*5), coupons:[]}));
+  // 补充定位城市（北京）的模拟会员，使城市榜超过 10 人，便于演示「前10 + 我的名次折叠」
+  const extraBJ = ['京城麦门信徒','望京消消王','国贸白领','西二旗程序员','朝阳遛娃妈','海淀学霸君','三里屯潮人','回龙观战士','五道口学子','通州夜猫子','丰台干饭王','石景山老铁'];
+  extraBJ.forEach((n,i)=> members.push({id:'bj'+i, name:n, city:'北京', thisWeekM: Math.round((Math.random()*3+0.5)*1000)/1000, points: Math.floor(Math.random()*5), coupons:[]}));
+  return {
+    members,
+    prizePool: null,
+    demoPhase: 'auto',
+    daily: {date: todayStr(), rounds:0, m:0, shared:false, boost:false},
+    weekLabel: weekLabelNow(),
+  };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ /* 沙箱/隐私模式下存储不可用时静默忽略，内存状态照常生效 */ } }
+function me(){ return state.members.find(m=>m.id==='me'); }
+function memberById(id){ return state.members.find(m=>m.id===id); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function weekLabelNow(){
+  // 以周五为周起点
+  const d=new Date();
+  return '自 '+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' 起的一周';
+}
+
+/* ===== 阶段判定（周五=领奖窗口，其余=累计） ===== */
+function getPhase(){
+  if(state.demoPhase==='claim') return 'claim';
+  if(state.demoPhase==='accumulate') return 'accumulate';
+  return (new Date().getDay()===5) ? 'claim' : 'accumulate';
+}
+
+/* ===== 棋盘 / 三消引擎 ===== */
+const N = 8;
+let board = [];
+let selected = null;
+let busy = false;
+let roundTimer = ROUND_SEC;
+let roundM = 0;
+let roundCounts = [];   // 本局各产品消除数量（按 PRODUCTS 下标）
+let roundKcal = 0;      // 本局消除的总 kcal（取自 MCP 营养库，直接展示）
+let roundInterval = null;
+let gameState = 'idle'; // idle | running | over
+let lastAction = 0;     // 最近一次用户操作时间（用于空闲提示）
+let hintActive = false; // 是否正在显示提示
+let mode = 'solo';      // solo | battle
+let battle = null;      // {mode:'local'|'async', players:[{name,m}], turn}
+let lastBattleMode = 'local';
+
+function randType(){ return Math.floor(Math.random()*NTYPES); }
+function buildEmpty(){ return Array.from({length:N},()=>Array(N).fill(-1)); }
+
+function findMatches(){
+  const matched = new Set();
+  for(let r=0;r<N;r++){
+    let run=1;
+    for(let c=1;c<=N;c++){
+      if(c<N && board[r][c]!==-1 && board[r][c]===board[r][c-1]) run++;
+      else { if(run>=3) for(let k=c-run;k<c;k++) matched.add(r+','+k); run=1; }
+    }
+  }
+  for(let c=0;c<N;c++){
+    let run=1;
+    for(let r=1;r<=N;r++){
+      if(r<N && board[r][c]!==-1 && board[r][c]===board[r-1][c]) run++;
+      else { if(run>=3) for(let k=r-run;k<r;k++) matched.add(k+','+c); run=1; }
+    }
+  }
+  return matched;
+}
+function swapCells(a,b){ const t=board[a.r][a.c]; board[a.r][a.c]=board[b.r][b.c]; board[b.r][b.c]=t; }
+function hasValidMove(){
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    if(c+1<N){ swapCells({r,c},{r,c:c+1}); const ok=findMatches().size>0; swapCells({r,c},{r,c:c+1}); if(ok) return true; }
+    if(r+1<N){ swapCells({r,c},{r:r+1,c}); const ok=findMatches().size>0; swapCells({r,c},{r:r+1,c}); if(ok) return true; }
+  }
+  return false;
+}
+function generateBoard(){
+  let guard=0;
+  do{
+    board = buildEmpty();
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++) board[r][c]=randType();
+    guard++;
+  }while((findMatches().size>0 || !hasValidMove()) && guard<200);
+}
+function collapse(){
+  for(let c=0;c<N;c++){
+    let write=N-1;
+    for(let r=N-1;r>=0;r--){ if(board[r][c]!==-1){ board[write][c]=board[r][c]; if(write!==r) board[r][c]=-1; write--; } }
+    for(let r=write;r>=0;r--) board[r][c]=randType();
+  }
+}
+/* ===== 音效（Web Audio 生成，无需外部文件） ===== */
+let audioCtx=null, soundOn=true;
+function ensureAudio(){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx&&audioCtx.state==='suspended') audioCtx.resume(); }catch(e){} }
+function playPop(count){
+  if(!soundOn) return;
+  ensureAudio(); if(!audioCtx) return;
+  const t=audioCtx.currentTime;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type='triangle';
+  const base=480 + Math.min(count,8)*45;
+  o.frequency.setValueAtTime(base,t);
+  o.frequency.exponentialRampToValueAtTime(base*0.55, t+0.13);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(0.22,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(t); o.stop(t+0.22);
+}
+const sleep = ms => new Promise(res=>setTimeout(res,ms));
+function cellEl(r,c){ return document.querySelector('#board [data-r="'+r+'"][data-c="'+c+'"]'); }
+async function resolveBoard(){
+  let total=0;
+  while(true){
+    const m=findMatches();
+    if(m.size===0) break;
+    let gained=0;
+    m.forEach(k=>{ const [r,c]=k.split(',').map(Number); const t=board[r][c]; gained += PRODUCTS[t].kcal/100; roundCounts[t]++; roundKcal += PRODUCTS[t].kcal; });
+    playPop(m.size);
+    m.forEach(k=>{ const [r,c]=k.split(',').map(Number); const cell=cellEl(r,c); if(cell) cell.classList.add('pop'); });
+    await sleep(230);
+    m.forEach(k=>{ const [r,c]=k.split(',').map(Number); board[r][c]=-1; });
+    collapse();
+    renderBoard();
+    total += gained;
+    await sleep(120);
+  }
+  return total;
+}
+async function trySwap(a,b){
+  if(busy) return; busy=true;
+  swapCells(a,b); renderBoard(); await sleep(120);
+  if(findMatches().size===0){ swapCells(a,b); renderBoard(); busy=false; toast('这两格交换无法消除'); return; }
+  const g = await resolveBoard();
+  roundM += g; updateRoundInfo();
+  if(!hasValidMove()){ toast('🔀 无可消除，自动重排'); await sleep(250); generateBoard(); renderBoard(); }
+  busy=false;
+}
+/* ===== 空闲提示：超过 10 秒无动作，闪烁提示一组可消除的格子 ===== */
+function findHint(){
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    if(c+1<N){ swapCells({r,c},{r,c:c+1}); const ok=findMatches().size>0; swapCells({r,c},{r,c:c+1}); if(ok) return [[r,c],[r,c+1]]; }
+    if(r+1<N){ swapCells({r,c},{r:r+1,c}); const ok=findMatches().size>0; swapCells({r,c},{r:r+1,c}); if(ok) return [[r,c],[r+1,c]]; }
+  }
+  return null;
+}
+function showHint(){
+  clearHint();
+  const pair=findHint(); if(!pair) return;
+  pair.forEach(([r,c])=>{ const cell=cellEl(r,c); if(cell) cell.classList.add('hint'); });
+  hintActive=true;
+}
+function clearHint(){ document.querySelectorAll('#board .cell.hint').forEach(e=>e.classList.remove('hint')); hintActive=false; }
+function onUserAction(){ lastAction=Date.now(); if(hintActive) clearHint(); }
+
+function onCellTap(r,c){
+  if(busy) return;
+  if(gameState!=='running') return;
+  onUserAction();
+  if(!selected){ selected={r,c}; renderBoard(); return; }
+  if(selected.r===r && selected.c===c){ selected=null; renderBoard(); return; }
+  if(Math.abs(selected.r-r)+Math.abs(selected.c-c)===1){
+    const a=selected; selected=null; trySwap(a,{r,c});
+  } else { selected={r,c}; renderBoard(); }
+}
+
+/* ===== 渲染 ===== */
+function renderBoard(){
+  const el=document.getElementById('board');
+  let html='';
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    const p=PRODUCTS[board[r][c]];
+    const sel = selected && selected.r===r && selected.c===c ? ' sel':'';
+    html += '<div class="cell'+sel+'" data-r="'+r+'" data-c="'+c+'" style="background:'+p.color+'">'+
+            '<span class="icwrap"><span class="ic">'+p.ic+'</span></span></div>';
+  }
+  el.innerHTML=html;
+}
+function updateRoundInfo(){
+  document.getElementById('roundM').textContent = fmt(roundM);
+  document.getElementById('weekM').textContent = fmt(me().thisWeekM);
+  const t=document.getElementById('timer');
+  t.textContent = roundTimer+'s';
+  t.className = 'timer' + (roundTimer<=10?' warn':'');
+}
+function fmt(v){ return (Math.round(v*10000)/10000).toFixed(4).replace(/\.?0+$/,''); }
+
+function showStartUI(){
+  const sb=document.getElementById('startBtn'), rb=document.getElementById('restartBtn');
+  const bb=document.getElementById('battleBanner'), sh=document.getElementById('shareBtn');
+  if(mode==='battle'){
+    sb.style.display='none'; rb.style.display='none'; bb.style.display='block'; if(sh) sh.style.display='none';
+  } else {
+    if(gameState==='running'){ sb.style.display='none'; rb.style.display='block'; }
+    else { sb.style.display='block'; rb.style.display='block'; }
+    bb.style.display='none'; if(sh) sh.style.display='inline-block';
+  }
+}
+function checkDailyCap(){
+  if(state.daily.date!==todayStr()) resetDaily();
+  const over = state.daily.rounds>=roundsCap();
+  if(over) toast('今日已达防沉迷上限（'+roundsCap()+' 盘），分享可提升限额或得 '+SHARE_M_BONUS+' m币');
+  return !over;
+}
+function beginRound(){
+  if(mode!=='battle' && !checkDailyCap()){ showLimitModal(); return; }
+  generateBoard(); renderBoard();
+  selected=null; roundM=0; roundTimer=ROUND_SEC; busy=false; gameState='running';
+  roundCounts=new Array(NTYPES).fill(0); roundKcal=0;
+  lastAction=Date.now(); hintActive=false; clearHint();
+  if(mode==='battle'){
+    document.getElementById('battleBannerText').textContent='对战 · '+battle.players[battle.turn].name+' 进行中';
+  }
+  updateRoundInfo(); showStartUI();
+  if(roundInterval) clearInterval(roundInterval);
+  roundInterval=setInterval(()=>{
+    roundTimer--; updateRoundInfo();
+    if(roundTimer<=0){ concludeRound(); return; }
+    if(gameState==='running'){
+      if(Date.now()-lastAction>=10000) showHint(); // 超过10秒无动作→提示一组可消除
+      if(document.getElementById('tab-rank').classList.contains('active')) renderRank(); // 排行榜随时刷新
+    }
+  },1000);
+}
+function creditRoundToAccount(){
+  if(state.daily.date!==todayStr()) resetDaily();
+  let add=roundM;
+  const remain=mCap()-state.daily.m;
+  if(add>remain) add=Math.max(0,remain);
+  state.daily.rounds++; state.daily.m+=add; me().thisWeekM+=add; save();
+  return add;
+}
+function tallyRound(){
+  creditRoundToAccount();
+  toast('本局 +'+fmt(roundM)+' m币（今日已得 '+fmt(state.daily.m)+'）');
+  renderRank(); renderMe();
+}
+function concludeRound(){
+  if(roundInterval){ clearInterval(roundInterval); roundInterval=null; }
+  gameState='over';
+  if(mode==='battle'){
+    const p=battle.players[battle.turn];
+    p.m=roundM;
+    creditRoundToAccount();      // 对战 m 币同样累计进本周
+    roundM=0; updateRoundInfo();
+    if(battle.mode==='local' && battle.turn < battle.players.length-1){
+      battle.turn++;
+      showStartUI();
+      toast('轮到 '+battle.players[battle.turn].name+'，90 秒开始！');
+      beginRound();
+    } else {
+      if(battle.mode==='async'){
+        const you=battle.players[0].m;
+        const names=['好友·小美','好友·阿强','好友·老王'];
+        for(let i=0;i<2;i++){  // 演示：模拟 2 位好友各自在手机完成 90 秒应战
+          const opp=Math.round(you*(0.5+Math.random()*1.0));
+          battle.players.push({name:names[i%names.length], m:opp});
+        }
+      }
+      finishBattle();
+    }
+    return;
+  }
+  const gain=roundM;  // 先保存本局得分（清零前）
+  tallyRound();       // 本局 m 币累计到本周 m 币
+  roundM=0;           // 本局 m 币清零
+  updateRoundInfo();
+  showStartUI();
+  clearHint();
+  showEndModal(gain);
+}
+function restartGame(){
+  if(gameState==='running' && roundM>0) tallyRound();
+  if(roundInterval){ clearInterval(roundInterval); roundInterval=null; }
+  beginRound();
+}
+function showEndModal(gain){
+  let h='<p class="endtip">本局消除明细（图标 = 产品）</p>';
+  h+='<div class="endrows">';
+  PRODUCTS.forEach((p,i)=>{
+    const cnt=roundCounts[i]||0;
+    h+='<div class="endrow"><span class="endic">'+p.ic+'</span>'+
+       '<span class="endname">'+p.short+'</span>'+
+       '<span class="endcnt">×'+cnt+'</span>'+
+       '<span class="endkcal">'+Math.round(p.kcal*cnt)+' kcal</span></div>';
+  });
+  h+='</div>';
+  h+='<div class="endsum">本局共消除 <b>'+Math.round(roundKcal)+'</b> kcal，共获得 <b>'+fmt(gain)+'</b> m币。<br>已累计进本周（本周共 <b>'+fmt(me().thisWeekM)+'</b> m币）。</div>';
+  h+='<p class="endnote">※ 游戏积分结合麦当劳 MCP 真实营养数据（kcal），仅供娱乐参考，不构成营养/饮食建议。</p>';
+  document.getElementById('endModalBreakdown').innerHTML=h;
+  document.getElementById('endModal').classList.add('show');
+}
+function closeEndModal(){ document.getElementById('endModal').classList.remove('show'); }
+
+/* ===== 排行榜 ===== */
+function renderRank(){
+  const city=myCity();
+  document.getElementById('rankCityTag').textContent=city;
+  document.getElementById('rankWeek').textContent = '统计周期：'+state.weekLabel+'（周五00:00→周四23:59）';
+  const sorted = state.members.filter(m=>(m.city||'通用')===city).slice().sort((a,b)=>b.thisWeekM-a.thisWeekM);
+  const TOP = 10;   // 城市榜默认展示前 10
+  let html='';
+  const shown = rankShowAll ? sorted : sorted.slice(0,TOP);
+  shown.forEach((m,i)=>{
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const isMe = m.id==='me';
+    html += '<tr class="'+(i<3?'top':'')+(isMe?' me':'')+'"><td><span class="rankbadge">'+medal+'</span> '+(i+1)+'</td><td>'+m.name+(isMe?'（你）':'')+'</td><td class="mval">'+fmt(m.thisWeekM)+'</td></tr>';
+  });
+  // 若“我”未进前 10，底部用分隔线钉一行显示我的名次与 m 币；可点“查看所有”展开全部
+  const myIdx = sorted.findIndex(m=>m.id==='me');
+  const myRank = myIdx+1;
+  if(!rankShowAll && myRank>TOP){
+    html += '<tr class="septr"><td colspan="3">— 以下省略，仅显示你的名次 —</td></tr>';
+    html += '<tr class="me bottom"><td><span class="rankbadge">'+myRank+'</span></td><td>'+sorted[myIdx].name+'（你）</td><td class="mval">'+fmt(sorted[myIdx].thisWeekM)+'</td></tr>';
+  }
+  if(!rankShowAll && sorted.length>TOP){
+    html += '<tr><td colspan="3" style="text-align:center;"><button class="linkbtn" onclick="rankShowAll=true;renderRank();">查看完整榜单（'+sorted.length+'人）▾</button></td></tr>';
+  } else if(rankShowAll){
+    html += '<tr><td colspan="3" style="text-align:center;"><button class="linkbtn" onclick="rankShowAll=false;renderRank();">收起 ▴</button></td></tr>';
+  }
+  document.getElementById('rankBody').innerHTML=html;
+}
+
+/* ===== 奖池 / 冻结 / 领奖 ===== */
+function freezeWeek(){
+  if(state.prizePool && !state.prizePool.closed) return; // 已有未关闭奖池
+  // 全国榜（全局排名）
+  const ranked = state.members.map(m=>({id:m.id,name:m.name,city:m.city||'通用',m:Math.round(m.thisWeekM*10000)/10000}))
+                              .sort((a,b)=>b.m-a.m)
+                              .map((e,i)=>({...e,gRank:i+1}));
+  // 城市榜（各城市独立排名，写入 cRank）
+  const byCity = {};
+  ranked.forEach(e=>{ (byCity[e.city]=byCity[e.city]||[]).push(e); });
+  Object.keys(byCity).forEach(c=> byCity[c].sort((a,b)=>b.m-a.m).forEach((e,i)=>{ e.cRank=i+1; }));
+  const top3 = ranked.slice(0,3).map(e=>e.id);
+  state.prizePool = { weekLabel: state.weekLabel, frozen: ranked, top3, claimed:{}, closed:false, createdAt:Date.now() };
+  state.members.forEach(m=> m.thisWeekM=0);   // 清零，开启新一周
+  state.weekLabel = weekLabelNow();
+  save(); renderAll();
+  toast('📊 本周已冻结到奖池，新一周 m 币已清零');
+}
+function closePool(){
+  if(state.prizePool) state.prizePool.closed=true;
+  save(); renderAll(); toast('🧹 周五23:59 未领奖的 m 币已清零，奖池关闭');
+}
+function claimCoupon(id){
+  const pool=state.prizePool; if(!pool||pool.closed) return;
+  if(pool.claimed[id]){ toast('本周已操作，不可重复'); return; }
+  const e=pool.frozen.find(x=>x.id===id);
+  const rank = e.cRank||e.gRank;
+  if(rank>REWARD_TOP_N){ toast('不在发券名次内'); return; }
+  const idx = rank<=3 ? rank-1 : 3;   // 前3名领专属券，第4–100名领入围券
+  memberById(id).coupons.push({...COUPONS[idx], at:new Date().toLocaleString()});
+  pool.claimed[id]='coupon'; save(); renderAll();
+  toast('🎟️ 已领取：'+COUPONS[idx].name);
+}
+function convertToPoints(id){
+  const pool=state.prizePool; if(!pool||pool.closed) return;
+  const e=pool.frozen.find(x=>x.id===id); if(!e) return;
+  if(pool.claimed[id]){ toast('本周已操作，不可重复'); return; }
+  const pts=Math.floor(e.m / M_PER_POINT);
+  if(pts<=0){ toast('m 币不足 '+M_PER_POINT+'，暂无法兑换积分'); return; }
+  memberById(id).points += pts;
+  pool.claimed[id]='points'; save(); renderAll();
+  toast('✅ 已兑换 '+pts+' 普通积分');
+}
+function renderPool(){
+  const pool=state.prizePool;
+  const title=document.getElementById('poolTitle');
+  const body=document.getElementById('poolBody');
+  const city=myCity();
+  document.getElementById('poolCityTag').textContent=city;
+  if(!pool){
+    title.textContent='m 币奖池（本周累计中）';
+    body.innerHTML='<p class="mini">当前为累计阶段，周四 23:59 后本周成绩将自动冻结到此页，周五 00:00–23:59 开放领奖。点击下方「演示控制」可提前查看完整闭环。</p>';
+    return;
+  }
+  title.textContent='m 币奖池 · '+pool.weekLabel;
+  const scopeLabel='（'+city+' 城市榜）';
+  // 当前定位城市榜单（按城市内名次）
+  const list = pool.frozen.filter(e=>e.city===city).sort((a,b)=>(a.cRank||999)-(b.cRank||999));
+  const top3ids = list.slice(0,3).map(e=>e.id);
+  let h='';
+  // 公开：前3名专属券
+  h+='<p style="font-weight:700;margin:6px 0;">🏅 '+scopeLabel+' 前 3 名专属无门槛券（公开）</p>';
+  top3ids.forEach((id,i)=>{
+    const e=list.find(x=>x.id===id);
+    h+='<div class="coupon"><div class="num">'+(i+1)+'</div><div><div class="ct">'+COUPONS[i].name+'</div><div class="cd">'+COUPONS[i].desc+'</div><div class="cd">得主：'+e.name+'（'+fmt(e.m)+' m币）</div></div></div>';
+  });
+  // 入围券说明
+  h+='<p class="mini" style="margin:4px 0 8px;">第 4–'+REWARD_TOP_N+' 名可领「'+COUPONS[3].name+'」（每城市独立排名、每城前 '+REWARD_TOP_N+' 名发券）。</p>';
+  // 完整排名（折叠：前10 + 我的名次，其余省略；可点“查看所有”展开）
+  h+='<p style="font-weight:700;margin:12px 0 4px;">📋 '+scopeLabel+' 排名（公开）</p><table><thead><tr><th>名次</th><th>会员</th><th>城市</th><th>m币</th><th>状态</th></tr></thead><tbody>';
+  const meIdx = list.findIndex(e=>e.id==='me');
+  const myRank = meIdx>=0 ? (list[meIdx].cRank||list[meIdx].gRank) : 999;
+  const shown = poolShowAll ? list : list.slice(0,10);
+  shown.forEach(e=>{
+    const rank=e.cRank||e.gRank;
+    const st=pool.claimed[e.id];
+    const tag = st==='coupon'?'<span class="tag done">已领券</span>':st==='points'?'<span class="tag done">已兑积分</span>':'<span class="tag wait">待操作</span>';
+    const medal = rank<=3?['🥇','🥈','🥉'][rank-1]:rank;
+    h+='<tr class="'+(rank<=3?'top':'')+(e.id==='me'?' me':'')+'"><td>'+medal+'</td><td>'+e.name+(e.id==='me'?'（你）':'')+'</td><td>'+e.city+'</td><td class="mval">'+fmt(e.m)+'</td><td>'+tag+'</td></tr>';
+  });
+  // 省略中间 + 我的名次钉行
+  if(!poolShowAll){
+    if(myRank>10 && meIdx>=0){
+      h+='<tr class="septr"><td colspan="5">— 以下省略，仅显示你的名次 —</td></tr>';
+      const e=list[meIdx]; const rank=e.cRank||e.gRank;
+      const st=pool.claimed[e.id];
+      const tag = st==='coupon'?'<span class="tag done">已领券</span>':st==='points'?'<span class="tag done">已兑积分</span>':'<span class="tag wait">待操作</span>';
+      h+='<tr class="me bottom"><td>'+rank+'</td><td>'+e.name+'（你）</td><td>'+e.city+'</td><td class="mval">'+fmt(e.m)+'</td><td>'+tag+'</td></tr>';
+    }
+    if(list.length>10){
+      h+='<tr><td colspan="5" style="text-align:center;"><button class="linkbtn" onclick="poolShowAll=true;renderPool();">查看完整榜单（'+list.length+'人）▾</button></td></tr>';
+    }
+  } else {
+    h+='<tr><td colspan="5" style="text-align:center;"><button class="linkbtn" onclick="poolShowAll=false;renderPool();">收起 ▴</button></td></tr>';
+  }
+  h+='</tbody></table>';
+  // 当前会员操作区（按“我”所在城市的名次判定，与查看城市无关）
+  const meEntry=pool.frozen.find(e=>e.id==='me');
+  if(meEntry){
+    const myR = meEntry.cRank||meEntry.gRank;
+    const eligible = myR<=REWARD_TOP_N;
+    h+='<div class="card" style="margin-top:12px;background:#fff8e1;">';
+    h+='<p style="font-weight:700;margin:0 0 6px;">你的操作（'+meEntry.city+' 城市榜第 '+myR+' 名）</p>';
+    const claimed=pool.claimed['me'];
+    if(claimed==='coupon') h+='<p class="mini">✅ 已领取优惠券，本周 m 币已清零。</p>';
+    else if(claimed==='points') h+='<p class="mini">✅ 已兑换 '+Math.floor(meEntry.m/M_PER_POINT)+' 普通积分，本周 m 币已清零。</p>';
+    else if(pool.closed) h+='<p class="mini">⏰ 领奖窗口已关闭，m 币已清零。</p>';
+    else {
+      const pts=Math.floor(meEntry.m/M_PER_POINT);
+      if(eligible){
+        const idx = myR<=3 ? myR-1 : 3;
+        h+='<p class="mini">你在发券名次内，可「领券」或「兑积分」二选一：</p>';
+        h+='<div class="btnrow"><button class="btn red" onclick="claimCoupon(\'me\')">领取 '+COUPONS[idx].name+'</button><button class="btn yel" onclick="convertToPoints(\'me\')"'+(pts<=0?' disabled':'')+'>兑 '+pts+' 积分</button></div>';
+      } else {
+        h+='<p class="mini">未进发券名次（前 '+REWARD_TOP_N+'），可将 m 币兑成普通积分：</p>';
+        h+='<div class="btnrow"><button class="btn yel" onclick="convertToPoints(\'me\')"'+(pts<=0?' disabled':'')+'>一键兑换 '+pts+' 普通积分</button></div>';
+      }
+    }
+    h+='</div>';
+  }
+  if(pool.closed) h='<p class="mini" style="color:#c0392b;">⏰ 本周领奖已结束，未操作 m 币已清零。</p>'+h;
+  body.innerHTML=h;
+}
+/* ===== 我的 ===== */
+function renderMe(){
+  const m=me();
+  document.getElementById('myPoints').textContent = m.points;
+  document.getElementById('myWeekM').textContent = fmt(m.thisWeekM);
+  const remain = roundsCap() - state.daily.rounds;
+  document.getElementById('myDaily').textContent = '今日剩余局数 '+Math.max(0,remain)+' / 今日已得 m '+fmt(state.daily.m)+' / 分享'+(state.daily.shared?'已用':'未用')+' · 限额'+(state.daily.boost?'已提升':'未提升');
+  const cp=document.getElementById('myCoupons');
+  if(m.coupons.length===0) cp.innerHTML='<p class="mini">暂无</p>';
+  else cp.innerHTML = m.coupons.map(c=>'<div class="coupon"><div class="num">🎟️</div><div><div class="ct">'+c.name+'</div><div class="cd">'+c.at+'</div></div></div>').join('');
+}
+
+/* ===== 阶段条 / 总渲染 ===== */
+function renderPhase(){
+  const ph=getPhase();
+  const bar=document.getElementById('phaseBar');
+  if(ph==='claim') bar.textContent='🟢 领奖窗口：周五 00:00–23:59（前3名领无门槛券 / 全员兑积分）';
+  else bar.textContent='🟡 累计阶段：周五 00:00 → 周四 23:59（玩游戏攒 m 币冲榜）';
+  bar.style.background = ph==='claim' ? '#FFC72C' : '#FFE9A8';
+}
+function renderAll(){ renderPhase(); renderRank(); renderPool(); renderMe(); updateRoundInfo(); }
+
+/* ===== Tab 切换 ===== */
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+  };
+});
+
+/* ===== Toast ===== */
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ===== 演示控制 ===== */
+document.getElementById('dFreeze').onclick=()=>{ freezeWeek(); };
+document.getElementById('dClaim').onclick=()=>{ if(!state.prizePool) freezeWeek(); state.demoPhase='claim'; save(); renderAll(); toast('已切换到周五领奖窗口（演示）'); };
+document.getElementById('dClose').onclick=()=>{ closePool(); };
+document.getElementById('dReset').onclick=()=>{ state.demoPhase='auto'; save(); renderAll(); toast('已恢复按实际时间判定'); };
+
+/* ===== 城市由登录授权定位自动确定（无城市选择器） ===== */
+
+/* ===== 模拟会员为固定值（本周 m 币只随“每局结算”变化，不随时间跳动） ===== */
+
+/* ===== 棋盘交互：指针事件统一处理 轻点 / 滑动（兼容手机触摸） =====
+   轻点：选中一块再点相邻块 = 交换（保留原有玩法）
+   滑动：在一块上向某方向划动 = 与该方向相邻块交换（手机首选） */
+const boardEl = document.getElementById('board');
+let pd = null; // pointerdown 起始状态
+boardEl.addEventListener('pointerdown', e=>{
+  if(gameState!=='running' || busy) return;
+  const cell = e.target.closest('.cell'); if(!cell) return;
+  pd = { r:+cell.dataset.r, c:+cell.dataset.c, x:e.clientX, y:e.clientY };
+});
+boardEl.addEventListener('pointerup', e=>{
+  if(!pd) return;
+  const dx=e.clientX-pd.x, dy=e.clientY-pd.y;
+  const adx=Math.abs(dx), ady=Math.abs(dy);
+  if(Math.max(adx,ady) > 18){
+    // 滑动 → 与对应方向相邻块交换
+    let tr=pd.r, tc=pd.c;
+    if(adx>ady) tc += dx>0?1:-1; else tr += dy>0?1:-1;
+    if(tr>=0 && tr<N && tc>=0 && tc<N){
+      onUserAction();
+      if(selected){ selected=null; renderBoard(); }
+      trySwap({r:pd.r,c:pd.c},{r:tr,c:tc});
+    }
+  } else {
+    // 轻点 → 沿用原选中/交换逻辑
+    onCellTap(pd.r, pd.c);
+  }
+  pd=null;
+});
+boardEl.addEventListener('pointercancel', ()=>{ pd=null; });
+
+/* ===== 分享功能（每日限 1 次，限额提升 / 得 m 币 二选一） ===== */
+function openShareChoice(){
+  if(state.daily.shared){ toast('今日分享奖励已使用'); return; }
+  document.getElementById('shareBoostBtn').textContent='提升今日限额（'+(state.daily.boost?roundsCap():DAILY_CAP)+'→'+(DAILY_CAP*2)+' 盘）';
+  document.getElementById('shareModal').classList.add('show');
+}
+function applyBoost(){
+  if(state.daily.shared) return;
+  if(state.daily.date!==todayStr()) resetDaily();
+  state.daily.boost=true; state.daily.shared=true; save();
+  toast('今日限额已提升：游戏 '+DAILY_CAP+'→'+roundsCap()+' 盘，m币上限同步翻倍');
+  renderMe(); closeModal('shareModal');
+}
+function applyMBonus(){
+  if(state.daily.shared) return;
+  if(state.daily.date!==todayStr()) resetDaily();
+  me().thisWeekM+=SHARE_M_BONUS; state.daily.m+=SHARE_M_BONUS; state.daily.shared=true; save();
+  toast('+'+SHARE_M_BONUS+' m币 已到账');
+  renderMe(); renderRank(); closeModal('shareModal');
+}
+function showLimitModal(){
+  document.getElementById('limitMsg').textContent='今日已达防沉迷上限（'+roundsCap()+' 盘）。分享可提升限额或得 '+SHARE_M_BONUS+' m币（二选一，每天 1 次）。';
+  document.getElementById('limitModal').classList.add('show');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function activateTab(name){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('main section').forEach(x=>x.classList.remove('active'));
+  const b=document.querySelector('nav button[data-tab="'+name+'"]'); if(b) b.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+/* ===== 对战模式（m 币同样累计进本周） ===== */
+function startLocalBattle(){
+  if(state.daily.date!==todayStr()) resetDaily();
+  if(state.daily.rounds>=roundsCap()){ showLimitModal(); return; }
+  mode='battle';
+  battle={mode:'local', players:[{name:'玩家 1',m:0},{name:'玩家 2',m:0}], turn:0};
+  lastBattleMode='local';
+  activateTab('game');
+  toast('玩家 1 准备，90 秒开始！');
+  beginRound();
+}
+let inviteRoom='';
+function startAsyncBattle(){
+  if(state.daily.date!==todayStr()) resetDaily();
+  if(state.daily.rounds>=roundsCap()){ showLimitModal(); return; }
+  inviteRoom=genRoom();
+  const link='https://mcd-match.demo/invite?room='+inviteRoom;
+  document.getElementById('inviteLinkText').textContent=link;
+  drawInvitePoster(inviteRoom);
+  document.getElementById('asyncInviteModal').classList.add('show');
+}
+function finishAsyncInvite(){
+  closeModal('asyncInviteModal');
+  activateTab('game');   // 回到游戏界面
+  document.getElementById('battleStartText').textContent='已向好友发送对战邀请（房间号 '+inviteRoom+'）。好友将在各自手机点开始、玩 90 秒，随后比 m 币多少。';
+  document.getElementById('battleStartModal').classList.add('show'); // 弹窗按钮「开始对战」
+}
+function beginAsyncBattle(){
+  closeModal('battleStartModal');
+  mode='battle';
+  battle={mode:'async', players:[{name:'你',m:0}], turn:0};
+  lastBattleMode='async';
+  beginRound();  // 开始 90 秒计时
+}
+function genRoom(){
+  const s='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let r='';
+  for(let i=0;i<6;i++) r+=s[Math.floor(Math.random()*s.length)];
+  return r;
+}
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function drawInvitePoster(room){
+  const cv=document.getElementById('inviteCanvas'); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width, H=cv.height;
+  ctx.fillStyle='#DA291C'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#FFC72C'; ctx.fillRect(0,0,W,8);
+  ctx.textAlign='center';
+  ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif';
+  ctx.fillText('麦当劳会员消消乐', W/2, 56);
+  ctx.font='bold 26px sans-serif';
+  ctx.fillText('好友对战邀请', W/2, 104);
+  ctx.fillStyle='#fff'; ctx.font='13px sans-serif';
+  ctx.fillText('90 秒比拼 · 看谁 m 币多', W/2, 126);
+  // 中间白卡
+  const cx=24, cy=150, cw=W-48, ch=180;
+  ctx.fillStyle='#fff'; roundRect(ctx,cx,cy,cw,ch,16); ctx.fill();
+  ctx.fillStyle='#DA291C'; ctx.font='bold 16px sans-serif'; ctx.fillText('房间号', W/2, cy+38);
+  ctx.font='bold 44px sans-serif'; ctx.fillText(room, W/2, cy+92);
+  ctx.fillStyle='#8a8a8a'; ctx.font='13px sans-serif';
+  ctx.fillText('分享给好友，各自点开始', W/2, cy+128);
+  ctx.fillStyle='#1a8f4c'; ctx.font='bold 14px sans-serif';
+  ctx.fillText('同场竞速 · m 币累计进本周', W/2, cy+156);
+  // 底部
+  ctx.fillStyle='#fff'; ctx.font='12px sans-serif';
+  ctx.fillText('扫码或点链接加入对战', W/2, H-26);
+}
+function copyInviteLink(){
+  const link=document.getElementById('inviteLinkText').textContent;
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(()=>toast('邀请链接已复制'),()=>toast('链接：'+link)); else toast('链接：'+link); }
+  catch(e){ toast('链接：'+link); }
+}
+function savePoster(){
+  const cv=document.getElementById('inviteCanvas');
+  try{ const a=document.createElement('a'); a.download='mcd_battle_invite_'+inviteRoom+'.png'; a.href=cv.toDataURL('image/png'); a.click(); toast('海报图已生成，可保存到相册后分享'); }
+  catch(e){ toast('当前环境不支持保存，可截图分享'); }
+}
+function exitBattle(){
+  if(roundInterval){ clearInterval(roundInterval); roundInterval=null; }
+  battle=null; mode='solo'; gameState='over';
+  showStartUI(); clearHint();
+}
+function finishBattle(){
+  const players=battle.players;
+  battle=null; mode='solo'; gameState='over';
+  showStartUI(); clearHint();
+  renderRank(); renderMe();
+  showBattleResult(players);
+}
+function showBattleResult(players){
+  const maxM=Math.max.apply(null, players.map(p=>p.m));
+  const winners=players.filter(p=>p.m===maxM);
+  let h='<p class="endtip">对战结果（m 币高者胜）</p><div class="endrows">';
+  players.forEach(p=>{
+    const win = p.m===maxM && winners.length===1;
+    h+='<div class="endrow"><span class="endname">'+p.name+'</span>'+
+       '<span class="endcnt">'+fmt(p.m)+' m</span>'+
+       (win?'<span class="endkcal" style="width:auto;color:#DA291C;font-weight:800;">获胜</span>':'')+
+       '</div>';
+  });
+  h+='</div>';
+  h+='<div class="endsum">'+(winners.length>1?'平局！':winners[0].name+' 获胜！')+'<br>无论输赢，本场各自获得的 m 币均已累计进本周。</div>';
+  document.getElementById('battleResultBreakdown').innerHTML=h;
+  document.getElementById('battleResultModal').classList.add('show');
+}
+
+/* ===== 启动 ===== */
+document.getElementById('startBtn').onclick=()=>{ closeEndModal(); ensureAudio(); if(gameState!=='running') beginRound(); };
+document.getElementById('restartBtn').onclick=()=>{ closeEndModal(); restartGame(); };
+document.getElementById('soundBtn').onclick=()=>{ soundOn=!soundOn; document.getElementById('soundBtn').textContent = soundOn?'🔊 声音开':'🔇 声音关'; if(soundOn) ensureAudio(); };
+document.getElementById('modalAgain').onclick=()=>{ closeEndModal(); beginRound(); };
+document.getElementById('modalClose').onclick=()=>{ closeEndModal(); };
+document.getElementById('endModal').addEventListener('click', e=>{ if(e.target.id==='endModal') closeEndModal(); });
+/* 分享 / 限额 */
+document.getElementById('shareBtn').onclick=openShareChoice;
+document.getElementById('shareBoostBtn').onclick=applyBoost;
+document.getElementById('shareMBtn').onclick=applyMBonus;
+document.getElementById('shareClose').onclick=()=>closeModal('shareModal');
+document.getElementById('limitShareBtn').onclick=()=>{ closeModal('limitModal'); openShareChoice(); };
+document.getElementById('limitClose').onclick=()=>closeModal('limitModal');
+/* 对战 */
+document.getElementById('localBattleBtn').onclick=startLocalBattle;
+document.getElementById('asyncBattleBtn').onclick=startAsyncBattle;
+document.getElementById('exitBattleBtn').onclick=exitBattle;
+document.getElementById('copyInviteBtn').onclick=copyInviteLink;
+document.getElementById('savePosterBtn').onclick=savePoster;
+document.getElementById('inviteDoneBtn').onclick=finishAsyncInvite;
+document.getElementById('battleStartBtn').onclick=beginAsyncBattle;
+document.getElementById('battleStartCancel').onclick=()=>closeModal('battleStartModal');
+document.getElementById('battleAgain').onclick=()=>{ closeModal('battleResultModal'); if(lastBattleMode==='local') startLocalBattle(); else beginAsyncBattle(); };
+document.getElementById('battleClose').onclick=()=>closeModal('battleResultModal');
+/* 遮罩点击关闭 */
+['shareModal','limitModal','battleResultModal','asyncInviteModal','battleStartModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click', e=>{ if(e.target.id===id) closeModal(id); });
+});
+renderAll();
+gameState='idle'; generateBoard(); renderBoard(); updateRoundInfo(); showStartUI();
+</script>
+</body>
+</html>
